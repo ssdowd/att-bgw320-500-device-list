@@ -27,9 +27,10 @@ def handle_cspeed(key, value, d):
 def handle_ctype(value, d):
     """handle the Connection Type."""
     wifiptn = re.compile(
-        r"""Wi-Fi\s*(?P<Frequency>\d*[.]?\d* GHz.*)
-            Type: (?P<NetworkType>Guest|Home)
-            Name: (?P<NetworkName>\w+)""", re.VERBOSE)
+        r"""Wi-Fi\s*(?P<Frequency>\d*[.]?\d*\s*GHz.*)
+            Type:\s*(?P<NetworkType>Guest|Home)
+            Name:\s*(?P<NetworkName>\w+)""",
+        re.VERBOSE)
     m = re.search(wifiptn, value)
     if m:
         gd = m.groupdict()
@@ -67,7 +68,7 @@ def bgp320_devices(url):
                                   value[0].text_content().strip(),
                                   rowdict)
                 elif re.search(ctypeptn, key[0].text_content().strip()):
-                    handle_ctype(value[0].text_content(), rowdict)
+                    handle_ctype(value[0].text_content().replace('\xa0', ' ').strip(), rowdict)
                 elif re.search(cspeedptn, key[0].text_content().strip()):
                     handle_cspeed(key[0].text_content().strip(), value[0].text_content(), rowdict)
                 else:
